@@ -1,0 +1,27 @@
+### Java ###
+*.class
+*.jar
+*.war
+*.ear
+*.log
+
+### IntelliJ ###
+.idea/
+*.iml
+out/
+
+### Maven ###
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+### OS files ###
+.DS_Store
+Thumbs.db
+
+### Environment files ###
+.env
+application-dev.properties
+
+### Docker ###
+*.pid
+logs/

@@ -1,0 +1,16 @@
+# Node & frontend
+node_modules
+dist
+.vite
+.next
+.env.local
+.env
+
+# Java / Spring Boot
+target
+*.log
+
+# IDE / OS
+.vscode
+.idea
+.DS_Store
