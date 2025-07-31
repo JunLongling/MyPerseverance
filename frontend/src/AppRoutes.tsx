@@ -1,59 +1,31 @@
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
-import useAuth from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 import LandingPage from "@/pages/LandingPage";
 import SignUp from "@/pages/SignUp";
 import SignIn from "@/pages/SignIn";
 import Dashboard from "@/pages/DashBoard";
 import Navbar from "@/components/Navbar";
-import ProtectedRoute from "@/components/ProtectedRoute";
-import type { JSX } from "react";
 
 export default function AppRoutes() {
   return (
     <Routes>
-      {/* Public routes with Navbar */}
+      {/* Landing page with Navbar */}
       <Route element={<LandingWithNavbarLayout />}>
-        <Route
-          path="/"
-          element={
-            <RedirectIfSignedIn>
-              <LandingPage />
-            </RedirectIfSignedIn>
-          }
-        />
+        <Route element={<RedirectIfSignedInLayout />}>
+          <Route path="/" element={<LandingPage />} />
+        </Route>
       </Route>
 
       {/* Auth routes without Navbar */}
-      <Route element={<AuthLayout />}>
-        <Route
-          path="/signin"
-          element={
-            <RedirectIfSignedIn>
-              <SignIn />
-            </RedirectIfSignedIn>
-          }
-        />
-        <Route
-          path="/signup"
-          element={
-            <RedirectIfSignedIn>
-              <SignUp />
-            </RedirectIfSignedIn>
-          }
-        />
+      <Route element={<RedirectIfSignedInLayout />}>
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
       </Route>
 
-      {/* Protected routes without Navbar */}
+      {/* Protected routes with auth guard */}
       <Route element={<ProtectedLayout />}>
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Route>
 
       {/* Catch-all redirect to landing */}
@@ -62,7 +34,7 @@ export default function AppRoutes() {
   );
 }
 
-// Layout with Navbar for landing page and similar public pages
+// Layout with Navbar for landing page only
 function LandingWithNavbarLayout() {
   return (
     <>
@@ -72,21 +44,20 @@ function LandingWithNavbarLayout() {
   );
 }
 
-// Layout for auth pages (signin/signup) without Navbar
-function AuthLayout() {
-  return <Outlet />;
-}
-
-// Layout for protected pages (no Navbar as requested)
-function ProtectedLayout() {
-  return <Outlet />;
-}
-
-// Redirects signed-in users away from public/auth pages to dashboard
-function RedirectIfSignedIn({ children }: { children: JSX.Element }) {
+// Layout that redirects signed-in users away from public/auth pages to dashboard
+function RedirectIfSignedInLayout() {
   const { token } = useAuth();
   if (token) {
     return <Navigate to="/dashboard" replace />;
   }
-  return children;
+  return <Outlet />;
+}
+
+// Layout that protects all nested routes
+function ProtectedLayout() {
+  const { token } = useAuth();
+  if (!token) {
+    return <Navigate to="/signin" replace />;
+  }
+  return <Outlet />;
 }

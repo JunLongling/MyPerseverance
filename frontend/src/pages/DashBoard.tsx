@@ -1,27 +1,38 @@
-import { useState, useMemo } from "react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import useFetchUserProfile from "@/hooks/useFetchUserProfile";
 import { Spinner } from "@/components/ui/Spinner";
 import { Heatmap } from "@/components/Heatmap";
 import { YearSelector } from "@/components/YearSelector";
 import { getDatesForYear } from "@/utils/dateUtils";
 import DashboardNavbar from "@/components/DashboardNavbar";
+import React from "react";
 
 export default function Dashboard() {
   const { user, loading, error } = useFetchUserProfile();
+  const navigate = useNavigate();
 
-  const [selectedYear, setSelectedYear] = useState<"current" | number>("current");
+  useEffect(() => {
+    if (!loading && !user) {
+      // Not loading and no user means not authenticated → redirect to signin
+      navigate("/", { replace: true });
+    }
+  }, [user, loading, navigate]);
+
+  const [selectedYear, setSelectedYear] = React.useState<"current" | number>("current");
   const year = selectedYear === "current" ? new Date().getFullYear() : selectedYear;
 
-  const progressMap = useMemo(() => {
+  const progressMap = React.useMemo(() => {
     const map = new Map<string, number>();
     return map;
   }, [year]);
 
-  const weeks = useMemo(() => getDatesForYear(year), [year]);
+  const weeks = React.useMemo(() => getDatesForYear(year), [year]);
 
   if (loading) return <Spinner />;
   if (error) return <p className="text-center text-lg text-red-600">Error: {error}</p>;
-  if (!user) return <p className="text-center text-lg">No user data found.</p>;
+
+  // user guaranteed to be non-null here (otherwise redirected)
 
   return (
     <>
@@ -29,7 +40,7 @@ export default function Dashboard() {
       <div className="min-h-screen p-8 bg-gray-50 flex flex-col items-center transition-colors duration-200">
         <header className="mb-8 w-full max-w-4xl text-center">
           <h1 className="text-4xl font-extrabold text-gray-900">
-            {user.username}&apos;s Dashboard
+            {user!.username}&apos;s Perseverance
           </h1>
         </header>
 
@@ -38,7 +49,7 @@ export default function Dashboard() {
             <YearSelector
               value={selectedYear}
               onChange={setSelectedYear}
-              profile={{ registeredAt: user.registeredAt }}
+              profile={{ registeredAt: user!.registeredAt }}
             />
           </div>
 

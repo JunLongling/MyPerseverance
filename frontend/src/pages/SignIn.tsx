@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import useAuth from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";  // <-- named import!
 import { Button } from "@/components/ui/Button";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -40,7 +40,6 @@ export default function SignIn() {
       });
 
       if (!res.ok) {
-        console.log("Response status:", res.status);
         let errorMsg = "Sign in failed. Please try again.";
 
         if (res.status === 401) {
@@ -63,10 +62,9 @@ export default function SignIn() {
       }
 
       const data: SignInResponse = await res.json();
-      login(data.accessToken);
+      login(data.accessToken); // <-- use login directly, no any casts
       navigate("/dashboard");
-    } catch (err: any) {
-      console.log("Fetch error caught:", err);
+    } catch (err) {
       setError("Network error. Please check your internet connection.");
     } finally {
       setLoading(false);
