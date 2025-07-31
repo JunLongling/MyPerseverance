@@ -1,3 +1,5 @@
+// src/components/YearSelector.tsx
+
 interface YearSelectorProps {
   value: "current" | number;
   onChange: (value: "current" | number) => void;
@@ -26,7 +28,8 @@ export function YearSelector({ value, onChange, profile }: YearSelectorProps) {
       className="flex flex-wrap gap-2 justify-center sm:justify-start"
     >
       {years.map((year) => {
-        const isSelected = value === year || (value === "current" && year === currentYear);
+        const isSelected =
+          value === year || (value === "current" && year === currentYear);
         return (
           <button
             key={year}
@@ -41,7 +44,7 @@ export function YearSelector({ value, onChange, profile }: YearSelectorProps) {
             `}
             aria-current={isSelected ? "true" : undefined}
           >
-            {year === currentYear ? "This Year" : year}
+            {year}
           </button>
         );
       })}

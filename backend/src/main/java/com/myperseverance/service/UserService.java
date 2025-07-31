@@ -5,6 +5,9 @@ import com.myperseverance.dto.UserProfile;
 import com.myperseverance.model.User;
 import com.myperseverance.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -57,4 +60,25 @@ public class UserService {
                 .registeredAt(user.getRegisteredAt())
                 .build();
     }
+
+    public User getCurrentUser() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || auth.getPrincipal() == null
+                || "anonymousUser".equals(auth.getPrincipal())) {
+            throw new RuntimeException("No authenticated user found");
+        }
+
+        Object principal = auth.getPrincipal();
+
+        String username;
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails) principal).getUsername();
+        } else {
+            username = principal.toString();
+        }
+
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+    }
+
 }

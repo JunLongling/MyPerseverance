@@ -3,7 +3,8 @@ import { weekdays, getMonthLabel } from "@/utils/dateUtils";
 import { getColorForCount } from "@/utils/colorUtils";
 
 interface HeatmapProps {
-  data: Map<string, number>;
+  data: Map<string, number>;             // date -> completed tasks count
+  taskDetails?: Map<string, string[]>;   // date -> completed task titles
   weeks: string[][];
   isLoading?: boolean;
   error?: string;
@@ -12,6 +13,7 @@ interface HeatmapProps {
 
 export const Heatmap: React.FC<HeatmapProps> = ({
   data,
+  taskDetails = new Map(),
   weeks,
   isLoading,
   error,
@@ -100,10 +102,7 @@ export const Heatmap: React.FC<HeatmapProps> = ({
 
       <div className="flex gap-[4px]">
         {/* Weekday Labels */}
-        <div
-          className="grid grid-rows-7 gap-[4px] text-gray-500"
-          style={{ width: 30 }}
-        >
+        <div className="grid grid-rows-7 gap-[4px] text-gray-500" style={{ width: 30 }}>
           {weekdays.map((wd, i) => (
             <div
               key={i}
@@ -132,7 +131,7 @@ export const Heatmap: React.FC<HeatmapProps> = ({
                   <div
                     key={date}
                     className={`heatmap-cell w-[15px] h-[15px] rounded-sm transition-colors duration-200 ease-in-out cursor-pointer ${colorClass}`}
-                    aria-label={`${date}: ${count} steps forward`}
+                    aria-label={`${date}: ${count} tasks completed`}
                     role="img"
                     onMouseEnter={(e) => handleMouseEnter(date, count, e)}
                     onMouseLeave={handleMouseLeave}
@@ -159,13 +158,13 @@ export const Heatmap: React.FC<HeatmapProps> = ({
             padding: "4px 8px",
             borderRadius: 4,
             fontSize: 10,
-            whiteSpace: "nowrap",
+            whiteSpace: "pre-line", // allow line breaks for bullet points
             pointerEvents: "none",
             userSelect: "none",
             zIndex: 1000,
           }}
         >
-          {formatAppTooltip(hoveredDate, data.get(hoveredDate) ?? 0)}
+          {formatTooltip(hoveredDate, data.get(hoveredDate) ?? 0, taskDetails.get(hoveredDate) ?? [])}
         </div>
       )}
 
@@ -179,7 +178,7 @@ export const Heatmap: React.FC<HeatmapProps> = ({
   );
 };
 
-function formatAppTooltip(dateStr: string, count: number) {
+function formatTooltip(dateStr: string, count: number, titles: string[]) {
   const date = new Date(dateStr);
   const formatter = new Intl.DateTimeFormat("en-US", {
     month: "short",
@@ -187,5 +186,9 @@ function formatAppTooltip(dateStr: string, count: number) {
     year: "numeric",
   });
   const formatted = formatter.format(date);
-  return `${count} step${count !== 1 ? "s" : ""} forward on ${formatted}`;
+
+  const taskLines = titles.map((t) => `• ${t}`).join("\n");
+  return `${count} task${count !== 1 ? "s" : ""} completed on ${formatted}${
+    titles.length ? "\n" + taskLines : ""
+  }`;
 }

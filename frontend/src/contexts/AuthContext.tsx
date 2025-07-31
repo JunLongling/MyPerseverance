@@ -1,4 +1,6 @@
+// src/contexts/AuthContext.tsx
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { authTokenManager } from "@/utils/authTokenManager";
 
 interface UserProfile {
   registeredAt: string;
@@ -29,9 +31,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const apiUrl = import.meta.env.VITE_API_URL;
 
-  // Initialize token from localStorage once on mount
+  // Initialize token from authTokenManager once on mount
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
+    const storedToken = authTokenManager.get();
     if (storedToken) {
       setToken(storedToken);
     }
@@ -57,7 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (res.status === 401) {
           setUser(null);
           setError("Unauthorized. Please log in again.");
-          logout();  // auto-logout if unauthorized
+          logout(); // auto-logout if unauthorized
           return;
         }
         let msg = `Failed to fetch user data: ${res.status} ${res.statusText}`;
@@ -90,7 +92,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = (newToken: string) => {
     setToken(newToken);
-    localStorage.setItem("token", newToken);
+    authTokenManager.set(newToken);
   };
 
   const logout = () => {
@@ -98,7 +100,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
     cachedUser = null;
     setError("");
-    localStorage.removeItem("token");
+    authTokenManager.clear();
   };
 
   return (

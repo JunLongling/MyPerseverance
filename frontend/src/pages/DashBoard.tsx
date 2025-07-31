@@ -1,62 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import useFetchUserProfile from "@/hooks/useFetchUserProfile";
 import { Spinner } from "@/components/ui/Spinner";
 import { Heatmap } from "@/components/Heatmap";
 import { getDatesForYear } from "@/utils/dateUtils";
 import DashboardNavbar from "@/components/DashboardNavbar";
-import React from "react";
-
-interface YearSelectorProps {
-  value: "current" | number;
-  onChange: (value: "current" | number) => void;
-  profile: { registeredAt: string };
-}
-
-function YearSelector({ value, onChange, profile }: YearSelectorProps) {
-  const currentYear = new Date().getFullYear();
-
-  let registeredYear = currentYear;
-  if (profile.registeredAt) {
-    const parsedYear = new Date(profile.registeredAt).getFullYear();
-    if (!isNaN(parsedYear)) {
-      registeredYear = parsedYear;
-    }
-  }
-
-  const years = [];
-  for (let y = currentYear; y >= registeredYear; y--) {
-    years.push(y);
-  }
-
-  return (
-    <nav
-      aria-label="Select year"
-      className="flex flex-wrap gap-2 justify-center sm:justify-start"
-    >
-      {years.map((year) => {
-        const isSelected = value === year || (value === "current" && year === currentYear);
-        return (
-          <button
-            key={year}
-            type="button"
-            onClick={() => onChange(year === currentYear ? "current" : year)}
-            className={`px-3 py-1 rounded-full text-sm font-medium transition 
-              ${
-                isSelected
-                  ? "bg-purple-600 text-white shadow-md"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              }
-            `}
-            aria-current={isSelected ? "true" : undefined}
-          >
-            {year}
-          </button>
-        );
-      })}
-    </nav>
-  );
-}
+import TodayTaskList from "@/components/TodayTaskList";
+import { YearSelector } from "@/components/YearSelector";
+import axiosClient from "@/api/axiosClient";
 
 export default function Dashboard() {
   const { user, loading, error } = useFetchUserProfile();
@@ -64,25 +15,54 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!loading && !user) {
-      // Not loading and no user means not authenticated → redirect to signin or landing
       navigate("/", { replace: true });
     }
   }, [user, loading, navigate]);
 
-  const [selectedYear, setSelectedYear] = React.useState<"current" | number>("current");
+  const [selectedYear, setSelectedYear] = useState<"current" | number>("current");
   const year = selectedYear === "current" ? new Date().getFullYear() : selectedYear;
 
-  const progressMap = React.useMemo(() => {
-    const map = new Map<string, number>();
-    return map;
+  // Map date -> completed tasks count
+  const [progressMap, setProgressMap] = useState<Map<string, number>>(new Map());
+  // Map date -> array of completed task titles for tooltip
+  const [taskDetails, setTaskDetails] = useState<Map<string, string[]>>(new Map());
+
+  const [loadingProgress, setLoadingProgress] = useState(false);
+
+  const weeks = useMemo(() => getDatesForYear(year), [year]);
+
+  const refreshProgressMap = useCallback(async () => {
+    setLoadingProgress(true);
+    try {
+      const startDate = `${year}-01-01`;
+      const endDate = `${year}-12-31`;
+      const res = await axiosClient.get(`/progress/summary?startDate=${startDate}&endDate=${endDate}`);
+
+      const map = new Map<string, number>();
+      const detailsMap = new Map<string, string[]>();
+
+      for (const item of res.data) {
+        map.set(item.date, item.completedTasks);
+        detailsMap.set(item.date, item.taskTitles || []);
+      }
+
+      setProgressMap(map);
+      setTaskDetails(detailsMap);
+    } catch (err) {
+      console.error("Failed to refresh progress data", err);
+    } finally {
+      setLoadingProgress(false);
+    }
   }, [year]);
 
-  const weeks = React.useMemo(() => getDatesForYear(year), [year]);
+  useEffect(() => {
+    if (user) {
+      refreshProgressMap();
+    }
+  }, [user, refreshProgressMap]);
 
   if (loading) return <Spinner />;
   if (error) return <p className="text-center text-lg text-red-600">Error: {error}</p>;
-
-  // user guaranteed to be non-null here (otherwise redirected)
 
   return (
     <>
@@ -94,17 +74,30 @@ export default function Dashboard() {
           </h1>
         </header>
 
-        <section className="w-full max-w-6xl p-6 bg-white rounded-lg shadow-lg border border-gray-200">
-          <div className="mb-4">
+        <section className="w-full max-w-6xl space-y-6">
+          <div className="p-6 bg-white rounded-lg shadow-lg border border-gray-200">
             <YearSelector
               value={selectedYear}
               onChange={setSelectedYear}
               profile={{ registeredAt: user!.registeredAt }}
             />
+
+            <div className="mt-4 border border-purple-300 rounded-md p-4 shadow-sm bg-white min-h-[120px]">
+              {loadingProgress ? (
+                <p className="text-center text-gray-500">Loading heatmap...</p>
+              ) : (
+                <Heatmap
+                  data={progressMap}
+                  taskDetails={taskDetails}
+                  weeks={weeks}
+                />
+              )}
+            </div>
           </div>
 
-          <div className="border border-purple-300 rounded-md p-4 shadow-sm bg-white">
-            <Heatmap data={progressMap} weeks={weeks} />
+          <div className="p-6 bg-white rounded-lg shadow border border-gray-200">
+            <h2 className="text-xl font-semibold mb-4">Today's Tasks</h2>
+            <TodayTaskList onTaskStatusChange={refreshProgressMap} />
           </div>
         </section>
       </div>
