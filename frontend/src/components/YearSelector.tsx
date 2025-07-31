@@ -21,19 +21,30 @@ export function YearSelector({ value, onChange, profile }: YearSelectorProps) {
   }
 
   return (
-    <select
-      className="border px-4 py-2 rounded-md text-sm"
-      value={value === "current" ? currentYear : value}
-      onChange={(e) => {
-        const selected = parseInt(e.target.value, 10);
-        onChange(selected === currentYear ? "current" : selected);
-      }}
+    <nav
+      aria-label="Select year"
+      className="flex flex-wrap gap-2 justify-center sm:justify-start"
     >
-      {years.map((year) => (
-        <option key={year} value={year}>
-          {year === currentYear ? "This Year" : year}
-        </option>
-      ))}
-    </select>
+      {years.map((year) => {
+        const isSelected = value === year || (value === "current" && year === currentYear);
+        return (
+          <button
+            key={year}
+            type="button"
+            onClick={() => onChange(year === currentYear ? "current" : year)}
+            className={`px-3 py-1 rounded-full text-sm font-medium transition 
+              ${
+                isSelected
+                  ? "bg-purple-600 text-white shadow-md"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }
+            `}
+            aria-current={isSelected ? "true" : undefined}
+          >
+            {year === currentYear ? "This Year" : year}
+          </button>
+        );
+      })}
+    </nav>
   );
 }
