@@ -1,4 +1,5 @@
 // src/utils/authTokenManager.ts
+
 const TOKEN_KEY = "accessToken";
 
 export const authTokenManager = {
@@ -9,7 +10,12 @@ export const authTokenManager = {
       localStorage.removeItem(TOKEN_KEY);
     }
   },
+
   get(): string | null {
     return localStorage.getItem(TOKEN_KEY);
+  },
+
+  clear() {
+    localStorage.removeItem(TOKEN_KEY);
   },
 };

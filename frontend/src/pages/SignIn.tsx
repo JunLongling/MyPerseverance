@@ -32,7 +32,7 @@ export default function SignIn() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${apiUrl}/api/signin`, {
+      const res = await fetch(`${apiUrl}/auth/signin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ signIn: identifier.trim(), password: password.trim() }),

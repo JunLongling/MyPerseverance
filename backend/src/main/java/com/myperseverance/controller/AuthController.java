@@ -18,7 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -93,17 +93,13 @@ public class AuthController {
 
     @GetMapping("/check-email")
     public ResponseEntity<AvailabilityResponse> checkEmailAvailability(@RequestParam String email) {
-        if (email == null || email.isBlank()) return ResponseEntity.ok(new AvailabilityResponse(true));
-        String emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
-        if (!email.matches(emailRegex)) return ResponseEntity.ok(new AvailabilityResponse(true));
-        return ResponseEntity.ok(new AvailabilityResponse(userService.isEmailAvailable(email)));
+        boolean isAvailable = userService.isEmailAvailable(email);
+        return ResponseEntity.ok(new AvailabilityResponse(isAvailable));
     }
 
     @GetMapping("/check-username")
     public ResponseEntity<AvailabilityResponse> checkUsernameAvailability(@RequestParam String username) {
-        if (username == null || username.isBlank()) return ResponseEntity.ok(new AvailabilityResponse(true));
-        String usernameRegex = "^[A-Za-z][A-Za-z0-9_]{2,19}$";
-        if (!username.matches(usernameRegex)) return ResponseEntity.ok(new AvailabilityResponse(true));
-        return ResponseEntity.ok(new AvailabilityResponse(userService.isUsernameAvailable(username)));
+        boolean isAvailable = userService.isUsernameAvailable(username);
+        return ResponseEntity.ok(new AvailabilityResponse(isAvailable));
     }
 }

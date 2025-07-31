@@ -35,7 +35,6 @@ public class UserService {
     }
 
     public Optional<UserProfile> getUserProfileByUsername(String requester, String targetUsername) {
-        // Only allow access if requester is the same as target username (private profile)
         if (requester == null || !requester.equals(targetUsername)) {
             return Optional.empty();
         }

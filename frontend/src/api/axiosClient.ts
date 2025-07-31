@@ -1,10 +1,10 @@
 // src/api/axiosClient.ts
-import axios from "axios";
+import axios, { type AxiosError, type AxiosRequestConfig, type AxiosResponse } from "axios";
 import { authTokenManager } from "@/utils/authTokenManager";
 
 const axiosClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-  withCredentials: true,
+  baseURL: import.meta.env.VITE_API_URL, // <-- use VITE_API_URL here
+  withCredentials: true, // Send cookies (for refresh token)
 });
 
 // Inject access token on every request
@@ -16,10 +16,11 @@ axiosClient.interceptors.request.use((config) => {
   return config;
 });
 
+// Token refresh logic
 let isRefreshing = false;
-let refreshSubscribers: Function[] = [];
+let refreshSubscribers: ((token: string) => void)[] = [];
 
-function subscribeTokenRefresh(cb: Function) {
+function subscribeTokenRefresh(cb: (token: string) => void) {
   refreshSubscribers.push(cb);
 }
 
@@ -29,17 +30,22 @@ function onRefreshed(token: string) {
 }
 
 axiosClient.interceptors.response.use(
-  response => response,
-  async error => {
+  (response: AxiosResponse) => response,
+  async (error: AxiosError & { config?: AxiosRequestConfig & { _retry?: boolean } }) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (
+      error.response?.status === 401 &&
+      originalRequest &&
+      !originalRequest._retry
+    ) {
       originalRequest._retry = true;
 
       if (isRefreshing) {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
           subscribeTokenRefresh((newToken: string) => {
-            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            if (originalRequest.headers)
+              originalRequest.headers.Authorization = `Bearer ${newToken}`;
             resolve(axiosClient(originalRequest));
           });
         });
@@ -48,16 +54,19 @@ axiosClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const { data } = await axiosClient.post("/refresh");
+        const { data } = await axiosClient.post("/auth/refresh");
         const newToken = data.token;
 
         authTokenManager.set(newToken);
         onRefreshed(newToken);
 
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        if (originalRequest.headers)
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return axiosClient(originalRequest);
-      } catch (err) {
-        return Promise.reject(err);
+      } catch (refreshError) {
+        authTokenManager.clear();
+        window.location.href = "/signin";
+        return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
       }

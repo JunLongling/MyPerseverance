@@ -1,14 +1,16 @@
-// src/contexts/AuthContext.tsx
-import { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { authTokenManager } from "@/utils/authTokenManager";
 
 interface AuthContextType {
   token: string | null;
+  isAuthenticated: boolean;
   login: (token: string) => void;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
   token: null,
+  isAuthenticated: false,
   login: () => {},
   logout: () => {},
 });
@@ -17,22 +19,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem("accessToken");
-    if (stored) setToken(stored);
+    const storedToken = authTokenManager.get();
+    if (storedToken) setToken(storedToken);
   }, []);
 
-  const login = (token: string) => {
-    localStorage.setItem("accessToken", token);
+  const login = useCallback((token: string) => {
+    authTokenManager.set(token);   // <-- update localStorage
     setToken(token);
-  };
+  }, []);
 
-  const logout = () => {
-    localStorage.removeItem("accessToken");
+  const logout = useCallback(() => {
+    authTokenManager.clear();       // <-- clear localStorage
     setToken(null);
-  };
+  }, []);
+
+  const isAuthenticated = !!token;
 
   return (
-    <AuthContext.Provider value={{ token, login, logout }}>
+    <AuthContext.Provider value={{ token, isAuthenticated, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
