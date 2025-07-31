@@ -1,27 +1,38 @@
 package com.myperseverance.service;
 
+import java.util.List;
+
 import com.myperseverance.model.User;
 import com.myperseverance.repository.UserRepository;
-import org.springframework.security.core.userdetails.*;
+
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserRepository repo;
+    private final UserRepository userRepository;
 
-    public CustomUserDetailsService(UserRepository repo) {
-        this.repo = repo;
+    public CustomUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = repo.findByEmail(email).orElseThrow(() ->
-                new UsernameNotFoundException("User not found"));
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getEmail())
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+
+        return org.springframework.security.core.userdetails.User
+                .withUsername(user.getUsername())
                 .password(user.getPassword())
-                .authorities("USER")
+                .accountExpired(false)
+                .accountLocked(false)
+                .authorities(List.of(new SimpleGrantedAuthority("ROLE_USER")))
+                .credentialsExpired(false)
+                .disabled(false)
                 .build();
     }
 }
