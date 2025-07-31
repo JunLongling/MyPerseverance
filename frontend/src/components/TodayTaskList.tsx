@@ -279,7 +279,7 @@ export default function TodayTaskList({ onTaskStatusChange }: TodayTaskListProps
                 </Button>
                 <Button
                   onClick={() => handleCancel(index)}
-                  variant="outline"
+                  variant="danger"
                   size="md"
                   rounded="md"
                   className=""
@@ -295,7 +295,7 @@ export default function TodayTaskList({ onTaskStatusChange }: TodayTaskListProps
             {!task.isDirty && task.id && (
               <Button
                 onClick={() => handleDelete(index)}
-                variant="danger"
+                variant="outline"
                 size="md"
                 rounded="md"
                 className="mt-2"
