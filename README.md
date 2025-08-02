@@ -35,11 +35,8 @@ Make sure you have the following installed:
    cd myperseverance
    ```
 2. Configure PostgreSQL and JWT secret  
-   Copy the example configuration file to create your own local config:
-   ```sh
-   cp backend/src/main/resources/application.properties.example backend/src/main/resources/application.properties
-   ```
-   Then open application.properties and replace the placeholder values with your own credentials:
+   Replace the contents of the existing application.properties file  with the contents of application.properties.example  
+   Then update the placeholder values in application.properties with your own PostgreSQL credentials and JWT secret:
    ```sh
    spring.datasource.url=jdbc:postgresql://localhost:5432/YOUR_DATABASE_NAME
    spring.datasource.username=YOUR_DB_USERNAME
