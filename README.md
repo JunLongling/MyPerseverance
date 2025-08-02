@@ -45,14 +45,22 @@ Make sure you have the following installed:
    spring.jpa.show-sql=true
    jwt.secret=YOUR_JWT_SECRET
    ```
-3. Install backend dependencies and start backend server:
+3. Run Backend
    ```sh
    cd backend
    ./mvnw spring-boot:run
    ```
-4. Install frontend dependencies and start frontend development server:
+4. Setup Frontend
+   Navigate to the frontend folder, create a .env file, install dependencies, and run the frontend server:
    ```sh
    cd ../frontend
+   ```
+   Create a .env file with the following content:
+   ```sh
+   VITE_API_URL=http://localhost:8080/api
+   ```
+   Then install dependencies and start the dev server:
+   ```sh
    npm install
    npm run dev
    ```
