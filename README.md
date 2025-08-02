@@ -42,9 +42,9 @@ You can run the following SQL commands using a PostgreSQL client such as:
 * pgAdmin (Graphical Interface)  
 * or any other SQL client of your choice.
    ```sh
-   CREATE DATABASE your_db_name;
-   CREATE USER your_db_user WITH PASSWORD 'your_password';
-  GRANT ALL PRIVILEGES ON DATABASE your_db_name TO your_db_user;
+   CREATE DATABASE YOUR_DATABASE_NAME;
+   CREATE USER YOUR_DB_USERNAME WITH PASSWORD 'YOUR_DB_PASSWORD';
+   GRANT ALL PRIVILEGES ON DATABASE YOUR_DATABASE_NAME TO YOUR_DB_USERNAME;
    ```
 Using psql (Command Line)  
 If you have psql installed, you can open a terminal and run:
