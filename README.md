@@ -77,20 +77,22 @@ Once inside the prompt, paste and run the SQL commands above (replace placeholde
    ./mvnw spring-boot:run
    ```
 4. Setup Frontend
-   Navigate to the frontend folder, create a .env file, install dependencies, and run the frontend server:
+   Navigate into the frontend folder, create the .env file
    ```sh
-   cd ../frontend
+   cd frontend
+   vim .env
    ```
-   Create a .env file with the following content:
+   Inside vim, press `i` to enter insert mode, then add this line:
    ```sh
    VITE_API_URL=http://localhost:8080/api
    ```
+   Press Esc to exit insert mode, then type :wq and press Enter to save and quit.  
    Then install dependencies and start the dev server:
    ```sh
    npm install
    npm run dev
    ```
-5. Open your browser and visit:
+6. Open your browser and visit:
  ```sh
    http://localhost:5173
 ```
