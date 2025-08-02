@@ -28,20 +28,47 @@ Make sure you have the following installed:
 * Java 21 (LTS)
 * PostgreSQL
 
-### Installation 
+### 🔐 Generate JWT Secret  
+You can generate a secure JWT secret key using OpenSSL:
+   ```sh
+   openssl rand -hex 32
+   ```
+Copy the output and keep it somewhere safe—you’ll use it in the backend config.
+
+### 🗄️ Database Setup
+Before starting the backend, create your PostgreSQL database and user.  
+You can run the following SQL commands using a PostgreSQL client such as:  
+* psql (PostgreSQL CLI)  
+* pgAdmin (Graphical Interface)  
+* or any other SQL client of your choice.
+   ```sh
+   CREATE DATABASE your_db_name;
+   CREATE USER your_db_user WITH PASSWORD 'your_password';
+  GRANT ALL PRIVILEGES ON DATABASE your_db_name TO your_db_user;
+   ```
+Using psql (Command Line)  
+If you have psql installed, you can open a terminal and run:
+   ```sh
+   psql -U postgres
+   ```
+Once inside the prompt, paste and run the SQL commands above (replace placeholders).
+
+### Installation Steps
 1. Clone the repo
    ```sh
    git clone https://github.com/junlongling/myperseverance.git
    cd myperseverance
    ```
-2. Configure PostgreSQL and JWT secret  
-   Replace the contents of the existing application.properties file  with the contents of application.properties.example  
-   Then update the placeholder values in application.properties with your own PostgreSQL credentials and JWT secret:
+2. Configure Backend
+   Copy the example config:
+   ```sh
+   cp backend/src/main/resources/application.properties.example backend/src/main/resources/application.properties
+   ```
+   Then open application.properties and set your values:
    ```sh
    spring.datasource.url=jdbc:postgresql://localhost:5432/YOUR_DATABASE_NAME
    spring.datasource.username=YOUR_DB_USERNAME
    spring.datasource.password=YOUR_DB_PASSWORD
-   spring.jpa.hibernate.ddl-auto=update
    jwt.secret=YOUR_JWT_SECRET
    ```
 3. Run Backend
