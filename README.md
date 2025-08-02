@@ -1,7 +1,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![MyPerseverance][product-screenshot]](https://example.com)
+![MyPerseverance][product-screenshot]
 
 MyPerseverance is a productivity and self-growth tracker that helps users log their daily tasks, visualize their consistency using a heatmap calendar, and build better habits through small, repeatable actions. Inspired by apps like leetcode and GitHub's contribution graph, it encourages users to stay accountable by tracking real progress—one step at a time.
 
