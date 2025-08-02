@@ -1,7 +1,13 @@
 import { palettes } from "@/utils/colorUtils";
 import type { PaletteName } from "@/utils/colorUtils";
 
-const depthLabels = ["Zero", "One", "Low", "Medium", "High"];
+const countLabels = [
+  "0 tasks",
+  "1 task",
+  "2-3 tasks",
+  "4-5 tasks",
+  "6+ tasks",
+];
 
 interface PaletteSelectorProps {
   selectedPalette: PaletteName;
@@ -29,7 +35,7 @@ export function PaletteSelector({ selectedPalette, onChange }: PaletteSelectorPr
               {Object.values(colors).map((tailwindClass, i) => (
                 <div
                   key={i}
-                  title={depthLabels[i]}
+                  title={countLabels[i]}
                   className={`w-6 h-6 rounded ${tailwindClass}`}
                   onClick={() => onChange(name as PaletteName)}
                 />
