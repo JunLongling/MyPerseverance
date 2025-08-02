@@ -42,9 +42,9 @@ You can run the following SQL commands using a PostgreSQL client such as:
 * pgAdmin (Graphical Interface)  
 * or any other SQL client of your choice.
    ```sh
-   CREATE DATABASE YOUR_DATABASE_NAME;
-   CREATE USER YOUR_DB_USERNAME WITH PASSWORD 'YOUR_DB_PASSWORD';
-   GRANT ALL PRIVILEGES ON DATABASE YOUR_DATABASE_NAME TO YOUR_DB_USERNAME;
+   CREATE DATABASE myperseverance_db;
+   CREATE USER myuser WITH PASSWORD 'mypassword123';
+   GRANT ALL PRIVILEGES ON DATABASE myperseverance_db TO myuser;
    ```
 Using psql (Command Line)  
 If you have psql installed, you can open a terminal and run:
@@ -66,9 +66,9 @@ Once inside the prompt, paste and run the SQL commands above (replace placeholde
    ```
    Then open application.properties and set your values:
    ```sh
-   spring.datasource.url=jdbc:postgresql://localhost:5432/YOUR_DATABASE_NAME
-   spring.datasource.username=YOUR_DB_USERNAME
-   spring.datasource.password=YOUR_DB_PASSWORD
+   spring.datasource.url=jdbc:postgresql://localhost:5432/myperseverance_db
+   spring.datasource.username=myuser
+   spring.datasource.password=mypassword123
    jwt.secret=YOUR_JWT_SECRET
    ```
 3. Run Backend
