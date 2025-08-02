@@ -42,9 +42,26 @@ You can run the following SQL commands using a PostgreSQL client such as:
 * pgAdmin (Graphical Interface)  
 * or any other SQL client of your choice.
    ```sh
-   CREATE DATABASE myperseverance_db;
-   CREATE USER myuser WITH PASSWORD 'mypassword123';
-   GRANT ALL PRIVILEGES ON DATABASE myperseverance_db TO myuser;
+      CREATE DATABASE myperseverance_db;
+      CREATE USER myuser WITH PASSWORD 'mypassword123';
+      GRANT ALL PRIVILEGES ON DATABASE myperseverance_db TO myuser;
+      
+      -- Connect to the database
+      \c myperseverance_db
+      
+      -- Change ownership of the public schema to your user
+      ALTER SCHEMA public OWNER TO myuser;
+      
+      -- Grant privileges on the schema
+      GRANT ALL PRIVILEGES ON SCHEMA public TO myuser;
+      
+      -- Grant privileges on existing tables and sequences (if any)
+      GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO myuser;
+      GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO myuser;
+      
+      -- Set default privileges for future tables and sequences created by your user
+      ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO myuser;
+      ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON SEQUENCES TO myuser;
    ```
 Using psql (Command Line)  
 If you have psql installed, you can open a terminal and run:
