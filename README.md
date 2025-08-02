@@ -34,15 +34,17 @@ Make sure you have the following installed:
    git clone https://github.com/junlongling/myperseverance.git
    cd myperseverance
    ```
-2. Configure PostgreSQL:  
-   Open the `application.properties` file located at: `backend/src/main/resources/application.properties`  
-   Update it with your own PostgreSQL credentials and JWT secret:
+2. Configure PostgreSQL and JWT secret  
+   Copy the example configuration file to create your own local config:
    ```sh
-   pring.datasource.url=jdbc:postgresql://localhost:5432/YOUR_DATABASE_NAME
+   cp backend/src/main/resources/application.properties.example backend/src/main/resources/application.properties
+   ```
+   Then open application.properties and replace the placeholder values with your own credentials:
+   ```sh
+   spring.datasource.url=jdbc:postgresql://localhost:5432/YOUR_DATABASE_NAME
    spring.datasource.username=YOUR_DB_USERNAME
    spring.datasource.password=YOUR_DB_PASSWORD
    spring.jpa.hibernate.ddl-auto=update
-   spring.jpa.show-sql=true
    jwt.secret=YOUR_JWT_SECRET
    ```
 3. Run Backend
