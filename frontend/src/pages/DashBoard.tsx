@@ -2,21 +2,29 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import useFetchUserProfile from "@/hooks/useFetchUserProfile";
 import { Spinner } from "@/components/ui/Spinner";
 import { Heatmap } from "@/components/Heatmap";
+import { palettes } from "@/utils/colorUtils";
+import type { PaletteName } from "@/utils/colorUtils";
 import { getDatesForYear } from "@/utils/dateUtils";
 import DashboardNavbar from "@/components/DashboardNavbar";
 import TodayTaskList from "@/components/TodayTaskList";
 import { YearSelector } from "@/components/YearSelector";
 import axiosClient from "@/api/axiosClient";
+import { PaletteSelector } from "@/components/PaletteSelector";
 
 export default function Dashboard() {
   const { user, loading, error } = useFetchUserProfile();
 
   const [selectedYear, setSelectedYear] = useState<"current" | number>("current");
-  const year = useMemo(() => (selectedYear === "current" ? new Date().getFullYear() : selectedYear), [selectedYear]);
+  const year = useMemo(
+    () => (selectedYear === "current" ? new Date().getFullYear() : selectedYear),
+    [selectedYear]
+  );
 
   const [progressMap, setProgressMap] = useState<Map<string, number>>(new Map());
   const [taskDetails, setTaskDetails] = useState<Map<string, string[]>>(new Map());
   const [loadingProgress, setLoadingProgress] = useState(false);
+
+  const [selectedPalette, setSelectedPalette] = useState<PaletteName>("lavender");
 
   const weeks = useMemo(() => getDatesForYear(year), [year]);
 
@@ -67,25 +75,32 @@ export default function Dashboard() {
         </header>
 
         <section className="w-full max-w-6xl space-y-6">
-          <div className="p-4 sm:p-6 bg-white rounded-lg shadow-md">
+          <div className="p-4 sm:p-6 bg-white rounded-2xl shadow-md space-y-6">
+            <PaletteSelector
+              selectedPalette={selectedPalette}
+              onChange={setSelectedPalette}
+            />
             <YearSelector
               value={selectedYear}
               onChange={setSelectedYear}
               profile={{ registeredAt: user.registeredAt }}
             />
-            <div
-              className="mt-4 p-2 sm:p-4 bg-white rounded-md border border-gray-200
-                         hover:border-gray-400 transition duration-300 ease-in-out min-h-[120px]"
-            >
+
+            <div className="rounded-lg border border-gray-200 bg-white p-4 sm:p-6">
               {loadingProgress ? (
                 <p className="text-center text-gray-500">Loading heatmap...</p>
               ) : (
-                <Heatmap data={progressMap} taskDetails={taskDetails} weeks={weeks} />
+                <Heatmap
+                  data={progressMap}
+                  taskDetails={taskDetails}
+                  weeks={weeks}
+                  palette={palettes[selectedPalette]}
+                />
               )}
             </div>
           </div>
 
-          <div className="p-4 sm:p-6 bg-white rounded-lg shadow-md">
+          <div className="p-4 sm:p-6 bg-white rounded-2xl shadow-md">
             <h2 className="text-lg sm:text-xl font-semibold mb-4">Today's Tasks</h2>
             <TodayTaskList onTaskStatusChange={fetchProgressData} />
           </div>

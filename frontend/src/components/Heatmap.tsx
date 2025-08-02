@@ -1,20 +1,30 @@
 import React, { useState, useMemo } from "react";
 import { weekdays, getMonthLabel } from "@/utils/dateUtils";
-import { getColorForCount } from "@/utils/colorUtils";
+import { getColorForCount, type ColorPalette } from "@/utils/colorUtils";
 
 interface HeatmapProps {
   data: Map<string, number>;
   taskDetails?: Map<string, string[]>;
   weeks: string[][];
+  palette?: ColorPalette;
   isLoading?: boolean;
   error?: string;
   className?: string;
 }
 
+const defaultPalette: ColorPalette = {
+  zero: "bg-gray-300",
+  one: "bg-purple-400",
+  low: "bg-purple-600",
+  medium: "bg-purple-800",
+  high: "bg-pink-700",
+};
+
 export const Heatmap: React.FC<HeatmapProps> = ({
   data,
   taskDetails = new Map(),
   weeks,
+  palette = defaultPalette,
   isLoading,
   error,
   className = "",
@@ -126,7 +136,7 @@ export const Heatmap: React.FC<HeatmapProps> = ({
                   }
 
                   const count = data.get(date) || 0;
-                  const colorClass = getColorForCount(count, false);
+                  const colorClass = getColorForCount(count, palette);
 
                   return (
                     <div
