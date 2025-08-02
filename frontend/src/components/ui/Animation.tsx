@@ -15,7 +15,7 @@ const Animation = (): React.JSX.Element => {
       }}
     >
       <DotLottieReact
-        src="https://lottie.host/78447dae-950f-42e2-8438-48237052fb6b/oZq7kyOUc9.lottie"
+        src="walking.lottie"
         loop
         autoplay
         style={{ width: 150, height: 150, display: 'block' }}

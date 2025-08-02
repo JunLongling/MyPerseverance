@@ -216,7 +216,7 @@ export default function TodayTaskList({ onTaskStatusChange }: TodayTaskListProps
       {tasks.map((task, index) => (
         <div
           key={task.id ?? index}
-          className="border rounded-lg shadow-sm p-6 bg-white flex flex-col md:flex-row md:items-center md:gap-6 relative"
+          className="rounded-lg shadow-md border border-gray-200 p-6 bg-white flex flex-col md:flex-row md:items-center md:gap-6 relative transition-shadow duration-200 hover:shadow-lg"
         >
           {/* Replace checkbox with icon buttons */}
           {task.id ? (

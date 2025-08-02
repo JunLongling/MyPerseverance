@@ -1,8 +1,7 @@
-// src/contexts/AuthContext.tsx
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { authTokenManager } from "@/utils/authTokenManager";
 
-interface UserProfile {
+export interface UserProfile {
   registeredAt: string;
   id: number;
   username: string;
@@ -21,22 +20,19 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-let cachedUser: UserProfile | null = null;
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<UserProfile | null>(cachedUser);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [token, setToken] = useState<string | null>(() => authTokenManager.get());
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
 
   const apiUrl = import.meta.env.VITE_API_URL;
 
-  // Initialize token from authTokenManager once on mount
-  useEffect(() => {
-    const storedToken = authTokenManager.get();
-    if (storedToken) {
-      setToken(storedToken);
-    }
+  const logout = useCallback(() => {
+    setToken(null);
+    setUser(null);
+    setError("");
+    authTokenManager.clear();
   }, []);
 
   const fetchUser = useCallback(async () => {
@@ -44,64 +40,51 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(null);
       return;
     }
+
     setLoading(true);
     setError("");
+
     try {
       const res = await fetch(`${apiUrl}/users/me`, {
-        method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         credentials: "include",
       });
+
       if (!res.ok) {
-        if (res.status === 401) {
-          setUser(null);
-          setError("Unauthorized. Please log in again.");
-          logout(); // auto-logout if unauthorized
-          return;
+        if (res.status === 401) logout();
+        else {
+          const errorData = await res.json().catch(() => null);
+          setError(errorData?.message || "Failed to fetch user.");
         }
-        let msg = `Failed to fetch user data: ${res.status} ${res.statusText}`;
-        try {
-          const data = await res.json();
-          if (data?.message) msg = data.message;
-        } catch {}
-        setError(msg);
+        setUser(null);
         return;
       }
+
       const data: UserProfile = await res.json();
-      cachedUser = data;
-      setUser(data);
-    } catch {
-      setError("Network error. Please try again.");
+      setUser((prev) => (JSON.stringify(prev) === JSON.stringify(data) ? prev : data)); // prevent ref rerender
+    } catch (err) {
+      setError("Network error.");
+      setUser(null);
     } finally {
       setLoading(false);
     }
-  }, [apiUrl, token]);
+  }, [token, apiUrl, logout]);
 
-  // Whenever token changes, refetch user
   useEffect(() => {
-    if (token) {
-      fetchUser();
-    } else {
+    if (token) fetchUser();
+    else {
       setUser(null);
       setLoading(false);
     }
   }, [token, fetchUser]);
 
-  const login = (newToken: string) => {
+  const login = useCallback((newToken: string) => {
     setToken(newToken);
     authTokenManager.set(newToken);
-  };
-
-  const logout = () => {
-    setToken(null);
-    setUser(null);
-    cachedUser = null;
-    setError("");
-    authTokenManager.clear();
-  };
+  }, []);
 
   return (
     <AuthContext.Provider value={{ token, user, loading, error, login, logout, refetchUser: fetchUser }}>
@@ -112,8 +95,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
+  if (!context) throw new Error("useAuth must be used within AuthProvider");
   return context;
 }

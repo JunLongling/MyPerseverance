@@ -1,5 +1,4 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import useFetchUserProfile from "@/hooks/useFetchUserProfile";
 import { Spinner } from "@/components/ui/Spinner";
 import { Heatmap } from "@/components/Heatmap";
@@ -11,93 +10,84 @@ import axiosClient from "@/api/axiosClient";
 
 export default function Dashboard() {
   const { user, loading, error } = useFetchUserProfile();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate("/", { replace: true });
-    }
-  }, [user, loading, navigate]);
 
   const [selectedYear, setSelectedYear] = useState<"current" | number>("current");
-  const year = selectedYear === "current" ? new Date().getFullYear() : selectedYear;
+  const year = useMemo(() => (selectedYear === "current" ? new Date().getFullYear() : selectedYear), [selectedYear]);
 
-  // Map date -> completed tasks count
   const [progressMap, setProgressMap] = useState<Map<string, number>>(new Map());
-  // Map date -> array of completed task titles for tooltip
   const [taskDetails, setTaskDetails] = useState<Map<string, string[]>>(new Map());
-
   const [loadingProgress, setLoadingProgress] = useState(false);
 
   const weeks = useMemo(() => getDatesForYear(year), [year]);
 
-  const refreshProgressMap = useCallback(async () => {
+  const fetchProgressData = useCallback(async () => {
+    if (!user) return;
+
     setLoadingProgress(true);
     try {
-      const startDate = `${year}-01-01`;
-      const endDate = `${year}-12-31`;
-      const res = await axiosClient.get(`/progress/summary?startDate=${startDate}&endDate=${endDate}`);
+      const res = await axiosClient.get(
+        `/progress/summary?startDate=${year}-01-01&endDate=${year}-12-31`
+      );
 
       const map = new Map<string, number>();
-      const detailsMap = new Map<string, string[]>();
+      const details = new Map<string, string[]>();
 
       for (const item of res.data) {
         map.set(item.date, item.completedTasks);
-        detailsMap.set(item.date, item.taskTitles || []);
+        details.set(item.date, item.taskTitles || []);
       }
 
       setProgressMap(map);
-      setTaskDetails(detailsMap);
-    } catch (err) {
-      console.error("Failed to refresh progress data", err);
+      setTaskDetails(details);
+    } catch (e) {
+      console.error("Error fetching progress summary", e);
     } finally {
       setLoadingProgress(false);
     }
-  }, [year]);
+  }, [user, year]);
 
   useEffect(() => {
     if (user) {
-      refreshProgressMap();
+      fetchProgressData();
     }
-  }, [user, refreshProgressMap]);
+  }, [fetchProgressData, user]);
 
   if (loading) return <Spinner />;
-  if (error) return <p className="text-center text-lg text-red-600">Error: {error}</p>;
+  if (error) return <p className="text-center text-red-600">Error: {error}</p>;
+  if (!user) return <p className="text-center">No user loaded</p>;
 
   return (
     <>
       <DashboardNavbar />
-      <div className="min-h-screen p-8 bg-gray-50 flex flex-col items-center transition-colors duration-200">
+      <div className="min-h-screen px-4 py-8 bg-gray-50 flex flex-col items-center">
         <header className="mb-8 w-full max-w-4xl text-center">
-          <h1 className="text-4xl font-extrabold text-gray-900">
-            {user!.username}&apos;s Perseverance
+          <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900">
+            {user.username}&apos;s Perseverance
           </h1>
         </header>
 
         <section className="w-full max-w-6xl space-y-6">
-          <div className="p-6 bg-white rounded-lg shadow-lg border border-gray-200">
+          <div className="p-4 sm:p-6 bg-white rounded-lg shadow-md">
             <YearSelector
               value={selectedYear}
               onChange={setSelectedYear}
-              profile={{ registeredAt: user!.registeredAt }}
+              profile={{ registeredAt: user.registeredAt }}
             />
-
-            <div className="mt-4 border border-purple-300 rounded-md p-4 shadow-sm bg-white min-h-[120px]">
+            <div
+              className="mt-4 p-2 sm:p-4 bg-white rounded-md border border-gray-200
+                         hover:border-gray-400 transition duration-300 ease-in-out min-h-[120px]"
+            >
               {loadingProgress ? (
                 <p className="text-center text-gray-500">Loading heatmap...</p>
               ) : (
-                <Heatmap
-                  data={progressMap}
-                  taskDetails={taskDetails}
-                  weeks={weeks}
-                />
+                <Heatmap data={progressMap} taskDetails={taskDetails} weeks={weeks} />
               )}
             </div>
           </div>
 
-          <div className="p-6 bg-white rounded-lg shadow border border-gray-200">
-            <h2 className="text-xl font-semibold mb-4">Today's Tasks</h2>
-            <TodayTaskList onTaskStatusChange={refreshProgressMap} />
+          <div className="p-4 sm:p-6 bg-white rounded-lg shadow-md">
+            <h2 className="text-lg sm:text-xl font-semibold mb-4">Today's Tasks</h2>
+            <TodayTaskList onTaskStatusChange={fetchProgressData} />
           </div>
         </section>
       </div>

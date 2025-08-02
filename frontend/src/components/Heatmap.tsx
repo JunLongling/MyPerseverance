@@ -3,8 +3,8 @@ import { weekdays, getMonthLabel } from "@/utils/dateUtils";
 import { getColorForCount } from "@/utils/colorUtils";
 
 interface HeatmapProps {
-  data: Map<string, number>;             // date -> completed tasks count
-  taskDetails?: Map<string, string[]>;   // date -> completed task titles
+  data: Map<string, number>;
+  taskDetails?: Map<string, string[]>;
   weeks: string[][];
   isLoading?: boolean;
   error?: string;
@@ -81,67 +81,69 @@ export const Heatmap: React.FC<HeatmapProps> = ({
   if (error) return <p className="text-red-600">Error: {error}</p>;
 
   return (
-    <div className={`relative select-none font-sans text-xs text-gray-700 ${className}`}>
-      {/* Month Labels */}
-      <div className="flex pl-[36px] mb-1 relative h-4">
-        {monthPositions.map((month, index) => {
-          const width = (month.end - month.start + 1) * 19;
-          const left = month.start * 19;
-          return (
-            <div
-              key={index}
-              className="absolute text-center text-[10px] text-gray-500 truncate"
-              style={{ left: `${left}px`, width: `${width}px`, lineHeight: "1.2" }}
-              aria-hidden="true"
-            >
-              {month.label}
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="flex gap-[4px]">
-        {/* Weekday Labels */}
-        <div className="grid grid-rows-7 gap-[4px] text-gray-500" style={{ width: 30 }}>
-          {weekdays.map((wd, i) => (
-            <div
-              key={i}
-              className="h-[14px] leading-none text-right pr-1"
-              aria-label={wd}
-              role="presentation"
-            >
-              {wd}
-            </div>
-          ))}
+    <div className={`relative font-sans text-xs text-gray-700 ${className}`}>
+      <div className="overflow-x-auto pb-2">
+        {/* Month Labels */}
+        <div className="flex pl-[36px] mb-1 relative h-4 min-w-fit">
+          {monthPositions.map((month, index) => {
+            const width = (month.end - month.start + 1) * 19;
+            const left = month.start * 19;
+            return (
+              <div
+                key={index}
+                className="absolute text-center text-[10px] text-gray-500 truncate"
+                style={{ left: `${left}px`, width: `${width}px`, lineHeight: "1.2" }}
+                aria-hidden="true"
+              >
+                {month.label}
+              </div>
+            );
+          })}
         </div>
 
-        {/* Heatmap Grid */}
-        <div className="flex gap-[4px]">
-          {weeks.map((week, colIdx) => (
-            <div key={colIdx} className="flex flex-col gap-[4px]">
-              {week.map((date, rowIdx) => {
-                if (!date) {
-                  return <div key={`${colIdx}-${rowIdx}`} className="w-[15px] h-[15px]" />;
-                }
+        <div className="flex gap-[4px] min-w-fit">
+          {/* Weekday Labels */}
+          <div className="grid grid-rows-7 gap-[4px] text-gray-500" style={{ width: 30 }}>
+            {weekdays.map((wd, i) => (
+              <div
+                key={i}
+                className="h-[14px] leading-none text-right pr-1"
+                aria-label={wd}
+                role="presentation"
+              >
+                {wd}
+              </div>
+            ))}
+          </div>
 
-                const count = data.get(date) || 0;
-                const colorClass = getColorForCount(count, false);
+          {/* Heatmap Grid */}
+          <div className="flex gap-[4px]">
+            {weeks.map((week, colIdx) => (
+              <div key={colIdx} className="flex flex-col gap-[4px]">
+                {week.map((date, rowIdx) => {
+                  if (!date) {
+                    return <div key={`${colIdx}-${rowIdx}`} className="w-[15px] h-[15px]" />;
+                  }
 
-                return (
-                  <div
-                    key={date}
-                    className={`heatmap-cell w-[15px] h-[15px] rounded-sm transition-colors duration-200 ease-in-out cursor-pointer ${colorClass}`}
-                    aria-label={`${date}: ${count} tasks completed`}
-                    role="img"
-                    onMouseEnter={(e) => handleMouseEnter(date, count, e)}
-                    onMouseLeave={handleMouseLeave}
-                    onTouchStart={(e) => handleMouseEnter(date, count, e as any)}
-                    onTouchEnd={handleMouseLeave}
-                  />
-                );
-              })}
-            </div>
-          ))}
+                  const count = data.get(date) || 0;
+                  const colorClass = getColorForCount(count, false);
+
+                  return (
+                    <div
+                      key={date}
+                      className={`heatmap-cell w-[15px] h-[15px] rounded-sm transition-colors duration-200 ease-in-out cursor-pointer ${colorClass}`}
+                      aria-label={`${date}: ${count} tasks completed`}
+                      role="img"
+                      onMouseEnter={(e) => handleMouseEnter(date, count, e)}
+                      onMouseLeave={handleMouseLeave}
+                      onTouchStart={(e) => handleMouseEnter(date, count, e as any)}
+                      onTouchEnd={handleMouseLeave}
+                    />
+                  );
+                })}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -150,7 +152,7 @@ export const Heatmap: React.FC<HeatmapProps> = ({
         <div
           style={{
             position: "fixed",
-            top: tooltipPos.y - 30,
+            top: Math.max(tooltipPos.y - 30, 8),
             left: tooltipPos.x,
             transform: "translateX(-50%)",
             backgroundColor: "rgba(0, 0, 0, 0.75)",
@@ -158,10 +160,11 @@ export const Heatmap: React.FC<HeatmapProps> = ({
             padding: "4px 8px",
             borderRadius: 4,
             fontSize: 10,
-            whiteSpace: "pre-line", // allow line breaks for bullet points
+            whiteSpace: "pre-line",
             pointerEvents: "none",
             userSelect: "none",
             zIndex: 1000,
+            maxWidth: "80vw",
           }}
         >
           {formatTooltip(hoveredDate, data.get(hoveredDate) ?? 0, taskDetails.get(hoveredDate) ?? [])}

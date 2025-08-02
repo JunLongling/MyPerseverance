@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";  // <-- named import!
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/Button";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -36,7 +36,7 @@ export default function SignIn() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ signIn: identifier.trim(), password: password.trim() }),
-        credentials: "include", // Important for cookies (refresh token)
+        credentials: "include",
       });
 
       if (!res.ok) {
@@ -53,18 +53,19 @@ export default function SignIn() {
               errorMsg = errorData.message;
             }
           } catch {
-            // Ignore JSON parsing errors
+            // Ignore JSON parse errors
           }
         }
 
         setError(errorMsg);
+        setLoading(false);
         return;
       }
 
       const data: SignInResponse = await res.json();
-      login(data.accessToken); // <-- use login directly, no any casts
+      login(data.accessToken);
       navigate("/dashboard");
-    } catch (err) {
+    } catch {
       setError("Network error. Please check your internet connection.");
     } finally {
       setLoading(false);
@@ -99,7 +100,10 @@ export default function SignIn() {
             placeholder="Enter your username or email"
             className="w-full rounded border border-gray-300 px-4 py-3 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600"
             value={identifier}
-            onChange={(e) => setIdentifier(e.target.value)}
+            onChange={(e) => {
+              setIdentifier(e.target.value);
+              if (error) setError("");
+            }}
             required
           />
         </div>
@@ -116,7 +120,10 @@ export default function SignIn() {
               placeholder="Enter your password"
               className="w-full rounded border border-gray-300 px-4 py-3 pr-10 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                if (error) setError("");
+              }}
               required
             />
             <button
