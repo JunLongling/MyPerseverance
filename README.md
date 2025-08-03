@@ -46,13 +46,13 @@ Follow these simple steps to set up and run the entire project.
 
     *   **Backend Configuration:** From the project root, run:
         ```sh
-        cp backend/.env.example backend/.env
+        cp backend/env.template backend/.env
         ```
         *(Note: The default values in the example file are ready for local development. You do not need to change anything).*
 
     *   **Frontend Configuration:** From the project root, run:
         ```sh
-        cp frontend/.env.example frontend/.env
+        cp frontend/env.template frontend/.env
         ```
         *(Note: This file tells the frontend where to find the backend API, which is pre-configured for this Docker setup).*
 
