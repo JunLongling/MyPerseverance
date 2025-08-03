@@ -14,3 +14,12 @@ target
 .vscode
 .idea
 .DS_Store
+
+# Ignore the backend environment file
+/backend/.env
+# Ignore the frontend environment file
+/frontend/.env
+# Other ignores...
+/backend/target/
+/frontend/dist/
+/frontend/node_modules/

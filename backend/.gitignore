@@ -20,7 +20,6 @@ Thumbs.db
 
 ### Environment files ###
 .env
-application-dev.properties
 
 ### Docker ###
 *.pid

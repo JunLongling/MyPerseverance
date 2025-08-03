@@ -1,0 +1,11 @@
+include:
+  - ./backend/docker-compose.yml
+  - ./frontend/docker-compose.yml
+
+# This defines the network and volumes that can be used by all included files.
+networks:
+  backend-network:
+    driver: bridge
+
+volumes:
+  postgres-data:

@@ -3,6 +3,7 @@ package com.myperseverance.config;
 import com.myperseverance.filter.JwtAuthenticationFilter;
 import com.myperseverance.service.CustomUserDetailsService;
 import com.myperseverance.util.JwtUtil;
+import org.springframework.beans.factory.annotation.Value; // <-- IMPORT THIS
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,6 +26,15 @@ public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
+
+    // =====================================================================
+    // ======================= THE FIX IS HERE (PART 1) ====================
+    // =====================================================================
+    // Inject the client origin URL from the application properties
+    @Value("${client.origin.url}")
+    private String clientOriginUrl;
+    // =====================================================================
+    // =====================================================================
 
     public SecurityConfig(JwtUtil jwtUtil, CustomUserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
@@ -62,11 +72,15 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(
-                "http://localhost:5173",  // Vite default
-                "http://localhost:3000",  // CRA default
-                "http://127.0.0.1:5173"
-        ));
+
+        // =====================================================================
+        // ======================= THE FIX IS HERE (PART 2) ====================
+        // =====================================================================
+        // Use the injected property instead of a hardcoded list
+        config.setAllowedOrigins(List.of(clientOriginUrl));
+        // =====================================================================
+        // =====================================================================
+
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
         config.setAllowCredentials(true);
