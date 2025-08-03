@@ -1,124 +1,99 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![MyPerseverance][product-screenshot]](https://example.com)
+![MyPerseverance][product-screenshot]
 
 MyPerseverance is a productivity and self-growth tracker that helps users log their daily tasks, visualize their consistency using a heatmap calendar, and build better habits through small, repeatable actions. Inspired by apps like leetcode and GitHub's contribution graph, it encourages users to stay accountable by tracking real progress—one step at a time.
 
 
 ### Built With
+This project is built with a modern, decoupled architecture and is fully containerized for easy setup and deployment.
 
 * [![React][React.js]][React-url]
 * [![TailwindCSS][TailwindCSS-badge]][TailwindCSS-url]
 * [![Spring Boot][SpringBoot-badge]][SpringBoot-url]
 * [![PostgreSQL][PostgreSQL-badge]][PostgreSQL-url]
-
-
+* [![Docker][Docker-badge]][Docker-url]
+  
 <!-- GETTING STARTED -->
 ## Getting Started
 
-To get a local copy up and running follow these simple example steps.
+This project uses **Docker** to create a consistent and easy-to-run development environment. The following steps will get a local copy of the entire full-stack application up and running with a single command.
 
 ### Prerequisites
 
 Make sure you have the following installed:
 
-* Node.js (v18 or later)
-* npm
-* Java 21 (LTS)
-* PostgreSQL
+*   [Git](https://git-scm.com/downloads)
+*   [Docker Desktop](https://www.docker.com/products/docker-desktop/) (which includes Docker Compose)
 
-### 🔐 Generate JWT Secret  
-You can generate a secure JWT secret key using OpenSSL:
-   ```sh
-   openssl rand -hex 32
-   ```
-Copy the output and keep it somewhere safe—you’ll use it in the backend config.
+**That's it!** You do not need to install Java, Node.js, or PostgreSQL on your machine manually—Docker handles everything.
 
-### 🗄️ Database Setup
-Before starting the backend, create your PostgreSQL database and user.  
-You can run the following SQL commands using a PostgreSQL client such as:  
-* psql (PostgreSQL CLI)  
-* pgAdmin (Graphical Interface)  
-* or any other SQL client of your choice.
-   ```sh
-      CREATE DATABASE myperseverance_db;
-      CREATE USER myuser WITH PASSWORD 'mypassword123';
-      GRANT ALL PRIVILEGES ON DATABASE myperseverance_db TO myuser;
-      
-      -- Connect to the database
-      \c myperseverance_db
-      
-      -- Change ownership of the public schema to your user
-      ALTER SCHEMA public OWNER TO myuser;
-      
-      -- Grant privileges on the schema
-      GRANT ALL PRIVILEGES ON SCHEMA public TO myuser;
-      
-      -- Grant privileges on existing tables and sequences (if any)
-      GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO myuser;
-      GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO myuser;
-      
-      -- Set default privileges for future tables and sequences created by your user
-      ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO myuser;
-      ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON SEQUENCES TO myuser;
-   ```
-Using psql (Command Line)  
-If you have psql installed, you can open a terminal and run:
-   ```sh
-   psql -U postgres
-   ```
-Once inside the prompt, paste and run the SQL commands above (replace placeholders).
 
-### Installation Steps
-1. Clone the repo
-   ```sh
-   git clone https://github.com/junlongling/myperseverance.git
-   cd myperseverance
-   ```
-2. Configure Backend
-   Copy the example config:
-   ```sh
-   cp backend/src/main/resources/application.properties.example backend/src/main/resources/application.properties
-   ```
-   Then open application.properties and set your values:
-   ```sh
-   spring.datasource.url=jdbc:postgresql://localhost:5432/myperseverance_db
-   spring.datasource.username=myuser
-   spring.datasource.password=mypassword123
-   jwt.secret=YOUR_JWT_SECRET
-   ```
-3. Run Backend
-   ```sh
-   cd backend
-   ./mvnw spring-boot:run
-   ```
-4. Setup Frontend
-   Navigate into the frontend folder, create the .env file
-   ```sh
-   cd frontend
-   vim .env
-   ```
-   Inside vim, press `i` to enter insert mode, then add this line:
-   ```sh
-   VITE_API_URL=http://localhost:8080/api
-   ```
-   Press Esc to exit insert mode, then type :wq and press Enter to save and quit.  
-   Then install dependencies and start the dev server:
-   ```sh
-   npm install
-   npm run dev
-   ```
-6. Open your browser and visit:
- ```sh
-   http://localhost:5173
-```
+### Installation & Setup
+Follow these simple steps to set up and run the entire project.
+
+1.  **Clone the Repo**
+    ```sh
+    git clone https://github.com/junlongling/myperseverance.git
+    cd myperseverance
+    ```
+2.  **Configure Environment Variables**
+    This project uses `.env` files to manage local secrets and configuration. You will need to create these files manually before starting the application.
+
+    *   **Backend Configuration:** Create a new file named `.env` inside the `backend/` directory.
+        ```sh
+        # Path: backend/.env
+        
+        # Backend & Infrastructure Configuration for Docker Compose
+        POSTGRES_DB=myperseverance
+        POSTGRES_USER=postgres
+        POSTGRES_PASSWORD=postgres
+        JWT_SECRET=REMOVED_JWT_SECRET=
+        ```
+
+    *   **Frontend Configuration:** Create a new file named `.env` inside the `frontend/` directory. This tells the frontend where to find the backend API.
+        ```sh
+        # Path: frontend/.env
+        
+        # Frontend Environment Configuration for the Local Dev Server
+        VITE_API_URL=http://localhost:8080/api
+        ```
+
+3.  **Build and Run the Application**
+    With Docker, you can start the entire application stack (frontend, backend, and database) with a single command. This command is run from the **project root directory**.
+
+    ```sh
+    docker-compose up --build
+    ```
+    *   This command might take a few minutes the first time you run it, as it needs to download the necessary base images and build your application.
+    *   `--build` ensures that fresh Docker images are created for the frontend and backend. The database setup and user creation are handled automatically by the PostgreSQL container.
+
+4.  **Access the Application**
+    Once the containers are up and running, your application will be available at:
+
+    *   **Frontend App:** [http://localhost:3000](http://localhost:3000)
+    *   **Backend API:** `http://localhost:8080`
+
+### Development Workflow
+
+*   **Hot-Reloading:** This setup is configured for hot-reloading. Any changes you make to the frontend or backend source code will automatically be detected, and the relevant service will restart or refresh in your browser.
+*   **Stopping the Application:** To stop all running services, press `Ctrl + C` in the terminal where `docker-compose` is running.
+*   **Running in the Background:** To run the services in the background (detached mode), use:
+    ```sh
+    docker-compose up -d
+    ```
+*   **Viewing Logs:** To view the logs from the running services (especially in detached mode), use:
+    ```sh
+    docker-compose logs -f
+    ```
+*   **Stopping Detached Services:**
+    ```sh
+    docker-compose down
+    ```
 
 <!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [product-screenshot]: images/my.png
-[React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
-[React-url]: https://reactjs.org/
 [React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
 [React-url]: https://reactjs.org/
 [TailwindCSS-badge]: https://img.shields.io/badge/TailwindCSS-0ea5e9?style=for-the-badge&logo=tailwindcss&logoColor=white
@@ -127,3 +102,5 @@ Once inside the prompt, paste and run the SQL commands above (replace placeholde
 [SpringBoot-url]: https://spring.io/projects/spring-boot
 [PostgreSQL-badge]: https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white
 [PostgreSQL-url]: https://www.postgresql.org/
+[Docker-badge]: https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white
+[Docker-url]: https://www.docker.com/
