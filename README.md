@@ -3,17 +3,18 @@
 
 ![MyPerseverance][product-screenshot]
 
-MyPerseverance is a productivity and self-growth tracker that helps users log their daily tasks, visualize their consistency using a heatmap calendar, and build better habits through small, repeatable actions. Inspired by apps like leetcode and GitHub's contribution graph, it encourages users to stay accountable by tracking real progress—one step at a time.
+MyPerseverance is a productivity and self-growth tracker that helps users log their daily tasks, visualize their consistency using a heatmap calendar, and build better habits through small, repeatable actions. Inspired by apps like LeetCode and GitHub's contribution graph, it encourages users to stay accountable by tracking real progress—one step at a time.
 
 
 ### Built With
+
 This project is built with a modern, decoupled architecture and is fully containerized for easy setup and deployment.
 
-* [![React][React.js]][React-url]
-* [![TailwindCSS][TailwindCSS-badge]][TailwindCSS-url]
-* [![Spring Boot][SpringBoot-badge]][SpringBoot-url]
-* [![PostgreSQL][PostgreSQL-badge]][PostgreSQL-url]
-* [![Docker][Docker-badge]][Docker-url]
+*   [![React][React.js]][React-url]
+*   [![TailwindCSS][TailwindCSS-badge]][TailwindCSS-url]
+*   [![Spring Boot][SpringBoot-badge]][SpringBoot-url]
+*   [![PostgreSQL][PostgreSQL-badge]][PostgreSQL-url]
+*   [![Docker][Docker-badge]][Docker-url]
   
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -22,7 +23,7 @@ This project uses **Docker** to create a consistent and easy-to-run development 
 
 ### Prerequisites
 
-Make sure you have the following installed:
+You only need to have these two tools installed on your system:
 
 *   [Git](https://git-scm.com/downloads)
 *   [Docker Desktop](https://www.docker.com/products/docker-desktop/) (which includes Docker Compose)
@@ -38,27 +39,21 @@ Follow these simple steps to set up and run the entire project.
     git clone https://github.com/junlongling/myperseverance.git
     cd myperseverance
     ```
+
 2.  **Configure Environment Variables**
-    This project uses `.env` files to manage local secrets and configuration. You will need to create these files manually before starting the application.
+    This project uses `.env` files to manage local secrets and configuration. Example files are provided in the repository to make this easy.
 
-    *   **Backend Configuration:** Create a new file named `.env` inside the `backend/` directory.
+    *   **Infrastructure & Backend Configuration:** From the project root, copy the main example `.env` file. This single file configures both the database and the backend.
         ```sh
-        # Path: backend/.env
-        
-        # Backend & Infrastructure Configuration for Docker Compose
-        POSTGRES_DB=myperseverance
-        POSTGRES_USER=postgres
-        POSTGRES_PASSWORD=postgres
-        JWT_SECRET=REMOVED_JWT_SECRET=
+        cp .env.example .env
         ```
+        *(Note: The default values in the example file are ready for local development. You do not need to change anything).*
 
-    *   **Frontend Configuration:** Create a new file named `.env` inside the `frontend/` directory. This tells the frontend where to find the backend API.
+    *   **Frontend Configuration:** Copy the example `.env` file for the frontend.
         ```sh
-        # Path: frontend/.env
-        
-        # Frontend Environment Configuration for the Local Dev Server
-        VITE_API_URL=http://localhost:8080/api
+        cp frontend/.env.example frontend/.env
         ```
+        *(Note: This file tells the frontend where to find the backend API, which is pre-configured for this Docker setup).*
 
 3.  **Build and Run the Application**
     With Docker, you can start the entire application stack (frontend, backend, and database) with a single command. This command is run from the **project root directory**.
@@ -67,12 +62,12 @@ Follow these simple steps to set up and run the entire project.
     docker-compose up --build
     ```
     *   This command might take a few minutes the first time you run it, as it needs to download the necessary base images and build your application.
-    *   `--build` ensures that fresh Docker images are created for the frontend and backend. The database setup and user creation are handled automatically by the PostgreSQL container.
+    *   `--build` ensures that fresh Docker images are created for the frontend and backend. The database setup is handled automatically.
 
 4.  **Access the Application**
     Once the containers are up and running, your application will be available at:
 
-    *   **Frontend App:** [http://localhost:3000](http://localhost:3000)
+    *   **Frontend App:** [http://localhost:5173](http://localhost:5173)
     *   **Backend API:** `http://localhost:8080`
 
 ### Development Workflow
@@ -91,6 +86,14 @@ Follow these simple steps to set up and run the entire project.
     ```sh
     docker-compose down
     ```
+
+### Running in Hybrid Mode (IDE + Docker)
+For intensive backend debugging, you can run the backend directly from your IDE.
+
+1.  **Start Background Services:** In your terminal, run `docker-compose up -d db`.
+2.  **Configure IDE:** In your IDE's Run Configuration for the Spring Boot app, use the **EnvFile plugin** to point to the main `.env` file at the project root.
+3.  **Run Backend from IDE:** Start your application. The default `local` profile will be used.
+4.  **Run Frontend Dev Server:** In a separate terminal, run `cd frontend && npm run dev`.
 
 <!-- MARKDOWN LINKS & IMAGES -->
 [product-screenshot]: images/my.png
