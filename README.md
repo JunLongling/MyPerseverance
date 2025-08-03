@@ -36,7 +36,7 @@ Follow these simple steps to set up and run the entire project.
 
 1.  **Clone the Repo**
     ```sh
-    git clone [https://github.com/junlongling/myperseverance.git](https://github.com/junlongling/myperseverance.git)
+    git clone https://github.com/JunLongling/MyPerseverance.git
     cd myperseverance
     ```
 
