@@ -39,19 +39,26 @@ Follow these simple steps to set up and run the entire project.
     cd myperseverance
     ```
 2.  **Configure Environment Variables**
-    This project uses `.env` files to manage local secrets and configuration. Example files are provided to make this easy.
+    This project uses `.env` files to manage local secrets and configuration. You will need to create these files manually before starting the application.
 
-    *   **Backend Configuration:** Copy the example `.env` file for the backend and database.
+    *   **Backend Configuration:** Create a new file named `.env` inside the `backend/` directory.
         ```sh
-        cp backend/.env.example backend/.env
+        # Path: backend/.env
+        
+        # Backend & Infrastructure Configuration for Docker Compose
+        POSTGRES_DB=myperseverance
+        POSTGRES_USER=postgres
+        POSTGRES_PASSWORD=postgres
+        JWT_SECRET=REMOVED_JWT_SECRET=
         ```
-        *(Note: The default values in the example file are ready for local development. You do not need to change anything unless you want to).*
 
-    *   **Frontend Configuration:** Copy the example `.env` file for the frontend.
+    *   **Frontend Configuration:** Create a new file named `.env` inside the `frontend/` directory. This tells the frontend where to find the backend API.
         ```sh
-        cp frontend/.env.example frontend/.env
+        # Path: frontend/.env
+        
+        # Frontend Environment Configuration for the Local Dev Server
+        VITE_API_URL=http://localhost:8080/api
         ```
-        *(Note: This file tells the frontend where to find the backend API, which is pre-configured for this Docker setup).*
 
 3.  **Build and Run the Application**
     With Docker, you can start the entire application stack (frontend, backend, and database) with a single command. This command is run from the **project root directory**.
@@ -86,7 +93,6 @@ Follow these simple steps to set up and run the entire project.
     ```
 
 <!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [product-screenshot]: images/my.png
 [React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
 [React-url]: https://reactjs.org/
