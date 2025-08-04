@@ -1,15 +1,15 @@
-networks:
-  frontend-network:
-    driver: bridge
-
+# MyPerseverance/frontend/docker-compose.yml
 services:
   frontend:
-    build: { context: ., dockerfile: Dockerfile.dev }
-    ports: ["5173:5173"]
-    env_file: ./.env
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    env_file:
+      - ./.env
     volumes:
       - .:/app
       - /app/node_modules
-    restart: unless-stopped
     networks:
-      - frontend-network
+      - app-network

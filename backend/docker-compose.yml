@@ -1,49 +1,31 @@
-networks:
-  backend-network:
-    driver: bridge
-
-volumes:
-  postgres-data:
-
+# MyPerseverance/backend/docker-compose.yml
 services:
-  db:
-    image: 'postgres:16'
-    ports:
-      - "5432:5432"
-    env_file:
-      - ./.env            
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"] 
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - backend-network
-
   backend:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
+    # This single line loads all variables from your .env file
     env_file:
       - ./.env
+    # We only define variables here that are NOT in the .env file
     environment:
-      SPRING_PROFILES_ACTIVE: staging
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      JWT_SECRET: ${JWT_SECRET}
-      CLIENT_ORIGIN_URL: ${CLIENT_ORIGIN_URL}
-    depends_on:
-      db:
-        condition: service_healthy
-    restart: unless-stopped
+      - SPRING_PROFILES_ACTIVE=staging
     networks:
-      - backend-network
+      - app-network
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:14.18
+    # Using env_file here is also clean and consistent
+    env_file:
+      - ./.env
+    volumes:
+      # This volume is defined in your root docker-compose.yml
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    ports:
+      - "5432:5432"

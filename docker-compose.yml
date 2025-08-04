@@ -1,11 +1,14 @@
+# MyPerseverance/docker-compose.yml
+# Use the 'include' directive to pull in your service definitions
 include:
   - ./backend/docker-compose.yml
   - ./frontend/docker-compose.yml
 
-# Define a shared network for when running together
+# Define the shared network for all services
 networks:
   app-network:
     driver: bridge
 
+# Define the persistent volume for the database
 volumes:
   postgres-data:
