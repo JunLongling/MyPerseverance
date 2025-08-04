@@ -2,9 +2,9 @@ include:
   - ./backend/docker-compose.yml
   - ./frontend/docker-compose.yml
 
-# This defines the network and volumes that can be used by all included files.
+# Define a shared network for when running together
 networks:
-  backend-network:
+  app-network:
     driver: bridge
 
 volumes:

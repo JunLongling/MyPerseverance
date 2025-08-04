@@ -1,11 +1,15 @@
+networks:
+  frontend-network:
+    driver: bridge
+
 services:
   frontend:
     build: { context: ., dockerfile: Dockerfile.dev }
     ports: ["5173:5173"]
+    env_file: ./.env
     volumes:
       - .:/app
       - /app/node_modules
-    depends_on: [backend]
     restart: unless-stopped
     networks:
-      - backend-network
+      - frontend-network

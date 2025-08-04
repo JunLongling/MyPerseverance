@@ -1,9 +1,14 @@
-# File: backend/docker-compose.yml
+networks:
+  backend-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+
 services:
   db:
     image: 'postgres:16'
     ports: ["5432:5432"]
-    # Add the env_file here to provide environment variables
     env_file: ./.env
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
@@ -22,7 +27,6 @@ services:
   backend:
     build: { context: ., dockerfile: Dockerfile }
     ports: ["8080:8080"]
-    # Add the env_file here to provide environment variables
     env_file: ./.env
     environment:
       SPRING_PROFILES_ACTIVE: docker
@@ -31,8 +35,6 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       CLIENT_ORIGIN_URL: ${CLIENT_ORIGIN_URL}
-    volumes:
-      - ./src/main:/app/src/main
     depends_on:
       db:
         condition: service_healthy
