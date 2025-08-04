@@ -31,4 +31,4 @@ logs/
 !.elasticbeanstalk/*.global.yml
 
 
-application-prod.properties
+

@@ -23,5 +23,4 @@ target
 /backend/target/
 /frontend/dist/
 /frontend/node_modules/
-backend/src/main/resources/application-prod.properties
-backend/src/main/resources/application-prod.properties
+

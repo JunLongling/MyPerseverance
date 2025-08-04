@@ -9,7 +9,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest(properties = {
-		"CLIENT_ORIGIN_URL=http://localhost:3000"
+		"client.origin.url=http://localhost:3000"
 })
 @Testcontainers
 class MyperseveranceApplicationTests {
