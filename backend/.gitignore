@@ -29,3 +29,6 @@ logs/
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+
+application-prod.properties

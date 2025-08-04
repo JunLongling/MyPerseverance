@@ -29,7 +29,7 @@ class MyperseveranceApplicationTests {
 		registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
 
 		// JWT secret (256-bit base64)
-		registry.add("jwt.secret", () -> "REMOVED_JWT_SECRET=");
+		registry.add("jwt.secret", () -> "lHKlyLGTmsAral63Z6vJzDfLkxqMgpDgLlcX0NI8Cgc=");
 	}
 
 	@Test
