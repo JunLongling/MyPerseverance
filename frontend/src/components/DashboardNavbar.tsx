@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/wdwd";
 import { LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext"; // <-- useAuth is named export now
 import { useNavigate } from "react-router-dom";

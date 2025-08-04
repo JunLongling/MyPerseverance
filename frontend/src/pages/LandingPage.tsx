@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Bwdwdw";
 import Animation from "@/components/ui/Animation";
 
 export default function LandingPage() {
