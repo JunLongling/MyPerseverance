@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axiosClient from "@/api/axiosClient";
 import { useNavigate, Link } from "react-router-dom";
-import { Button } from "@/components/ui/wdwdwd";
+import { Button } from "@/components/ui/CustomButton";
 import { useDebounceValue } from "usehooks-ts";
 import { CheckCircle, XCircle, Loader2, Eye, EyeOff } from "lucide-react";
 import isEmail from "validator/lib/isEmail";

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import useFetchUserProfile from "@/hooks/useFetchUserProfile";
 import { useAuth } from "@/contexts/AuthContext";
-import { buttonBaseStyles, variants, sizes } from "@/components/ui/wdwd";
+import { buttonBaseStyles, variants, sizes } from "@/components/ui/CustomButton";
 
 export default function Navbar() {
   const { token } = useAuth();

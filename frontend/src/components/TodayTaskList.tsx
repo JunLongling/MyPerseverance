@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axiosClient from "@/api/axiosClient";
 import { HiCheckCircle, HiOutlineCheckCircle } from "react-icons/hi";
-import { Button } from "@/components/ui/wdwd"; 
+import { Button } from "@/components/ui/CustomButton"; 
 
 export interface TaskDto {
   id?: number;
