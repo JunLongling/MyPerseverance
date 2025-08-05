@@ -102,15 +102,6 @@ Follow these simple steps to set up and run the entire project.
     docker-compose down
     ```
 
----
-### Running in Hybrid Mode (IDE + Docker)
-For intensive backend debugging, you can run the backend directly from your IDE.
-
-1.  **Start Background Services:** In your terminal, run `docker-compose up -d db`.
-2.  **Configure IDE:** In your IDE's Run Configuration for the Spring Boot app, use the **EnvFile plugin** to point to the `backend/.env` file.
-3.  **Run Backend from IDE:** Start your application. The default `local` profile will be used.
-4.  **Run Frontend Dev Server:** In a separate terminal, run `cd frontend && npm run dev`.
-
 <!-- MARKDOWN LINKS & IMAGES -->
 [product-screenshot]: images/my.png
 [React.js]: https://img.shields.io/badge/React-20232A?style-for-the-badge&logo=react&logoColor=61DAFB
