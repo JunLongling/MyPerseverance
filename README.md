@@ -24,12 +24,13 @@ This project uses **Docker** to create a consistent and easy-to-run development 
 
 ### Prerequisites
 
-You only need to have these two tools installed on your system:
+To build and run this project, you will need the following tools installed on your system:
 
 *   [Git](https://git-scm.com/downloads)
+*   [Java Development Kit (JDK)](https://adoptium.net/) (Version 21 is recommended)
 *   [Docker Desktop](https://www.docker.com/products/docker-desktop/) (which includes Docker Compose)
 
-**That's it!** You do not need to install Java, Node.js, or PostgreSQL on your machine manually—Docker handles everything.
+**Note:** While the final application runs entirely within Docker containers, a JDK is required on your local machine to initially build the backend application (`.jar` file). Please ensure Docker Desktop is running on your machine **before** you proceed with the setup steps, as it is needed for the build and testing phase.
 
 ### Installation & Setup
 
