@@ -58,7 +58,7 @@ Follow these simple steps to set up and run the entire project.
         *(Note: This file tells the frontend where to find the backend API, which is pre-configured for this Docker setup).*
 
 3.  **Build the Backend Application**
-    **This is a required one-time step.** The Docker build process needs the compiled Java application (the `.jar` file) to exist.
+    **This is a required one-time step.** Make sure you have Docker installed and running on your system before proceeding. The backend will be containerized later, and the build process assumes Docker is available. The Docker build process needs the compiled Java application (the `.jar` file) to exist.
 
     Navigate into the `backend` directory and run the Maven wrapper to build the project:
     ```sh
